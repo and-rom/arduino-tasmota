@@ -136,17 +136,14 @@ sonoff-minimal.bin: deploy-sketch
 esp.bin: deploy-sketch
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
-	                                                --pref "build.extra_flags=-DWITH_STA1" \
-	                                                --pref "build.extra_flags=-DESP_CONFIG" \
+	                                                --pref "build.extra_flags=-DWITH_STA1 -DESP_CONFIG" \
 	                                                --verify && \
 	                                                cp /tmp/build/$@ ./$@
 
 esp-minimal.bin: deploy-sketch
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
-	                                                --pref "build.extra_flags=-DWITH_STA1" \
-	                                                --pref "build.extra_flags=-DESP_CONFIG" \
-	                                                --pref "build.extra_flags=-DBE_MINIMAL" \
+	                                                --pref "build.extra_flags=-DWITH_STA1 -DESP_CONFIG -DBE_MINIMAL" \
 	                                                --verify && \
 	                                                cp /tmp/build/$@ ./$@
 ota-server: 
