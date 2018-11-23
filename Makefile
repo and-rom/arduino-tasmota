@@ -123,6 +123,7 @@ run: deploy-sketch
 sonoff.bin: deploy-sketch
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
+	                                                --verbose-build \
 	                                                --verify && \
 	                                                cp /tmp/build/$@ ./$@
 
@@ -130,6 +131,7 @@ sonoff-minimal.bin: deploy-sketch
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
 	                                                --pref "build.extra_flags=-DBE_MINIMAL" \
+	                                                --verbose-build \
 	                                                --verify && \
 	                                                cp /tmp/build/$@ ./$@
 
@@ -137,6 +139,7 @@ esp.bin: deploy-sketch
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
 	                                                --pref "build.extra_flags=-DWITH_STA1 -DESP_CONFIG" \
+	                                                --verbose-build \
 	                                                --verify && \
 	                                                cp /tmp/build/$@ ./$@
 
@@ -144,7 +147,17 @@ esp-minimal.bin: deploy-sketch
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
 	                                                --pref "build.extra_flags=-DWITH_STA1 -DESP_CONFIG -DBE_MINIMAL" \
+	                                                --verbose-build \
 	                                                --verify && \
 	                                                cp /tmp/build/$@ ./$@
+
+espupload:
+	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
+	                                                --pref "upload.project_name=sonoff" \
+	                                                --pref "build.project_name={upload.project_name}" \
+	                                                --pref "custom_UploadTool=generic_espupload" \
+	                                                --verbose-upload \
+	                                                --port /dev/null \
+	                                                --upload
 ota-server: 
 	python -m SimpleHTTPServer 8000
