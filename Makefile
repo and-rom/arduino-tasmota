@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := deploy-sketch
 
-.PHONY:  download extract dirs board repo libs src tune tool prefs config install-ide deploy-sketch run sonoff sonoff-minimal esp esp-minimal
-.SILENT:
+.PHONY:  download extract dirs board repo libs src tune tool prefs config install-ide deploy-sketch run bins scp ota-server clean
+#.SILENT:
 
 UNAME_P := $(shell uname -p)
 
@@ -120,14 +120,14 @@ run: deploy-sketch
 	$(info 12 Running Arduino IDE)
 	./arduino portable/sketchbook/sonoff/sonoff.ino &
 
-sonoff.bin: deploy-sketch
+sonoff.bin:
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
 	                                                --verbose-build \
 	                                                --verify && \
 	                                                cp /tmp/build/$@ ./$@
 
-sonoff-minimal.bin: deploy-sketch
+sonoff-minimal.bin:
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
 	                                                --pref "build.extra_flags=-DBE_MINIMAL" \
@@ -135,7 +135,7 @@ sonoff-minimal.bin: deploy-sketch
 	                                                --verify && \
 	                                                cp /tmp/build/$@ ./$@
 
-esp.bin: deploy-sketch
+esp.bin:
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
 	                                                --pref "build.extra_flags=-DWITH_STA1 -DESP_CONFIG" \
@@ -143,7 +143,7 @@ esp.bin: deploy-sketch
 	                                                --verify && \
 	                                                cp /tmp/build/$@ ./$@
 
-esp-minimal.bin: deploy-sketch
+esp-minimal.bin:
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
 	                                                --pref "build.extra_flags=-DWITH_STA1 -DESP_CONFIG -DBE_MINIMAL" \
@@ -159,5 +159,14 @@ espupload:
 	                                                --verbose-upload \
 	                                                --port /dev/null \
 	                                                --upload
+
+clean:
+	rm -rf *.bin
+
+bins: sonoff.bin sonoff-minimal.bin esp.bin esp-minimal.bin
+
+scp: sonoff.bin sonoff-minimal.bin esp.bin esp-minimal.bin
+	scp -P 8081 *.bin raa@androm.ru:/var/www/html/tasmota
+
 ota-server: 
 	python -m SimpleHTTPServer 8000
