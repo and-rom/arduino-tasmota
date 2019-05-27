@@ -189,8 +189,8 @@ clean-all:
 clean-config:
 	rm -rf Sonoff-Tasmota/sonoff/user_config_override.h
 
+bins: build/sonoff.bin build/sonoff-minimal.bin build/esp.bin build/esp-minimal.bin build/version.txt
 
-bins: sonoff.bin sonoff-minimal.bin esp.bin esp-minimal.bin
 build/version.txt: build
 	$(eval VER := $(shell cat Sonoff-Tasmota/sonoff/sonoff_version.h | sed -ne "s#^.*VERSION = \\(.*\\);#\1#p"))
 	$(eval STR_VER :=$(shell printf '%d.%d.%d' "$$(( $$(( $(VER) >> 24 )) & 0xFF ))" "$$(( $$(( $(VER) >> 16 )) & 0xFF ))" "$$(( $$(( $(VER) >> 8 )) & 0xFF ))" ))
