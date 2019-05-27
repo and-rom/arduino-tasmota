@@ -30,10 +30,14 @@ arduino:
 extract: download arduino
 
 portable:
-	$(info 3 Making directories)
+	$(info 3 Making portable directory)
 	mkdir -p portable/sketchbook
 
-dirs: portable
+build:
+	$(info 3 Making build directory)
+	mkdir -p build
+
+dirs: portable build
 
 portable/packages/esp8266:
 	$(info 4 Installing boards)
@@ -120,38 +124,38 @@ run: deploy-sketch
 	$(info 12 Running Arduino IDE)
 	./arduino portable/sketchbook/sonoff/sonoff.ino &
 
-sonoff.bin:
+build/sonoff.bin: build
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
-	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
+	                                                --pref "build.project_name=$(patsubst build/%.bin,%,$@)" \
 	                                                --verbose-build \
 	                                                --verify && \
-	                                                cp /tmp/build/$@ ./$@
+	                                                cp /tmp/$@ ./$@
 
-sonoff-minimal.bin:
+build/sonoff-minimal.bin: build
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
-	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
-	                                                --pref "build.extra_flags=-DBE_MINIMAL" \
+	                                                --pref "build.project_name=$(patsubst build/%.bin,%,$@)" \
+	                                                --pref "build.extra_flags=-DFIRMWARE_MINIMAL" \
 	                                                --verbose-build \
 	                                                --verify && \
-	                                                cp /tmp/build/$@ ./$@
+	                                                cp /tmp/$@ ./$@
 
-esp.bin:
+build/esp.bin: build
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
-	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
+	                                                --pref "build.project_name=$(patsubst build/%.bin,%,$@)" \
 	                                                --pref "build.extra_flags=-DWITH_STA1 -DESP_CONFIG" \
 	                                                --verbose-build \
 	                                                --verify && \
-	                                                cp /tmp/build/$@ ./$@
+	                                                cp /tmp/$@ ./$@
 
-esp-minimal.bin:
+build/esp-minimal.bin: build
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
-	                                                --pref "build.project_name=$(patsubst %.bin,%,$@)" \
-	                                                --pref "build.extra_flags=-DWITH_STA1 -DESP_CONFIG -DBE_MINIMAL" \
+	                                                --pref "build.project_name=$(patsubst build/%.bin,%,$@)" \
+	                                                --pref "build.extra_flags=-DWITH_STA1 -DESP_CONFIG -DFIRMWARE_MINIMAL" \
 	                                                --verbose-build \
 	                                                --verify && \
-	                                                cp /tmp/build/$@ ./$@
+	                                                cp /tmp/$@ ./$@
 
-espupload:
+espupload: build
 	./arduino portable/sketchbook/sonoff/sonoff.ino --pref "build.path=/tmp/build" \
 	                                                --pref "upload.project_name=sonoff" \
 	                                                --pref "build.project_name={upload.project_name}" \
@@ -165,8 +169,9 @@ clean:
 
 bins: sonoff.bin sonoff-minimal.bin esp.bin esp-minimal.bin
 
-scp: sonoff.bin sonoff-minimal.bin esp.bin esp-minimal.bin
-	scp -P 8081 *.bin raa@androm.ru:/var/www/html/tasmota
+scp: build/sonoff.bin build/sonoff-minimal.bin build/esp.bin build/esp-minimal.bin build/version.txt
+# tasmota-server described in ~/.ssh/config
+	scp $(wildcard build/*.bin) build/version.txt tasmota-server:/var/www/html/tasmota
 
 ota-server: 
 	python -m SimpleHTTPServer 8000
