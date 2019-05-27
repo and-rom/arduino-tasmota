@@ -42,7 +42,7 @@ dirs: portable build
 portable/packages/esp8266:
 	$(info 4 Installing boards)
 	./arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json" --save-prefs
-	./arduino --install-boards esp8266:esp8266
+	./arduino --install-boards esp8266:esp8266:2.5.1
 
 board: extract dirs portable/packages/esp8266
 
@@ -65,44 +65,60 @@ portable/sketchbook/sonoff:
 
 src: repo dirs libs portable/sketchbook/sonoff
 
-portable/packages/esp8266/hardware/esp8266/2.4.2/boards.txt.orig:
+portable/packages/esp8266/hardware/esp8266/2.5.1/boards.txt.orig:
 	$(info 8.1 Tuning board)
-	mv portable/packages/esp8266/hardware/esp8266/2.4.2/boards.txt portable/packages/esp8266/hardware/esp8266/2.4.2/boards.txt.orig
-	ln -s "../../../../../../Sonoff-Tasmota/arduino/version 2.4.2/boards.txt" "portable/packages/esp8266/hardware/esp8266/2.4.2/boards.txt"
+	mv portable/packages/esp8266/hardware/esp8266/2.5.1/boards.txt portable/packages/esp8266/hardware/esp8266/2.5.1/boards.txt.orig
+	ln -s "../../../../../../Sonoff-Tasmota/arduino/version 2.5.1/boards.txt" "portable/packages/esp8266/hardware/esp8266/2.5.1/boards.txt"
 
-portable/packages/esp8266/hardware/esp8266/2.4.2/platform.txt.orig:
+portable/packages/esp8266/hardware/esp8266/2.5.1/platform.txt.orig:
 	$(info 8.2 Tuning board)
-	mv portable/packages/esp8266/hardware/esp8266/2.4.2/platform.txt portable/packages/esp8266/hardware/esp8266/2.4.2/platform.txt.orig
-	ln -s "../../../../../../Sonoff-Tasmota/arduino/version 2.4.2/platform.txt" "portable/packages/esp8266/hardware/esp8266/2.4.2/platform.txt"
+	mv portable/packages/esp8266/hardware/esp8266/2.5.1/platform.txt portable/packages/esp8266/hardware/esp8266/2.5.1/platform.txt.orig
+	ln -s "../../../../../../Sonoff-Tasmota/arduino/version 2.5.1/platform.txt" "portable/packages/esp8266/hardware/esp8266/2.5.1/platform.txt"
 
-tune: portable/packages/esp8266/hardware/esp8266/2.4.2/boards.txt.orig \
-	portable/packages/esp8266/hardware/esp8266/2.4.2/platform.txt.orig \
+tune: portable/packages/esp8266/hardware/esp8266/2.5.1/boards.txt.orig \
+	portable/packages/esp8266/hardware/esp8266/2.5.1/platform.txt.orig \
 	board src
 
-portable/packages/esp8266/hardware/esp8266/2.4.2/tools/espupload.py:
+portable/packages/esp8266/hardware/esp8266/2.5.1/tools/espupload.py:
 	$(info 9 Adding upload tool)
-	ln -s "../../../../../../../Sonoff-Tasmota/arduino/espupload.py" "portable/packages/esp8266/hardware/esp8266/2.4.2/tools/espupload.py"
+	ln -s "../../../../../../../Sonoff-Tasmota/arduino/espupload.py" "portable/packages/esp8266/hardware/esp8266/2.5.1/tools/espupload.py"
 
-tool: board src portable/packages/esp8266/hardware/esp8266/2.4.2/tools/espupload.py
+tool: board src portable/packages/esp8266/hardware/esp8266/2.5.1/tools/espupload.py
 
 portable/preferences.txt.orig:
 	$(info 10 Setting board type, build parameters and IDE preferences)
 	cp portable/preferences.txt portable/preferences.txt.orig
+    #baud=57600          # Upload Speed
+    #UploadTool=esptool  # Upload Tool (Serial = esptool, OTA_upload = espupload)
+    #xtal=80             # CPU Frequency
+    #CrystalFreq=26      # Crystal Frequency
+    #eesz=1M             # Flash Size
+    #FlashMode=dout      # Flash Mode
+    #FlashFreq=40        # Flash Frequency
+    #ResetMethod=nodemcu # Reset Method
+    #dbg=Disabled        # Debug Port
+    #lvl=None____        # Debug Level
+    #ip=lm2f             # lwIPVariant
+    #vt=flash            # VTables
+    #exception=disabled  # Exception
+    #led=2"              # Builtin Led
+    #wipe=none           # Erase Flash (Only Sketch = none)
 	./arduino --board  "esp8266:esp8266:generic:\
-                    CpuFrequency=80,\
-                    CrystalFreq=26,\
-                    Debug=Disabled,\
-                    DebugLevel=None____,\
-                    FlashErase=none,\
-                    FlashFreq=40,\
-                    FlashMode=dout,\
-                    FlashSize=1M0,\
-                    LwIPVariant=v2mss1460,\
-                    ResetMethod=nodemcu,\
-                    UploadSpeed=57600,\
+                    baud=57600,\
                     UploadTool=esptool,\
-                    VTable=flash,\
-                    led=2" \
+                    xtal=80,\
+                    CrystalFreq=26,\
+                    eesz=1M,\
+                    FlashMode=dout,\
+                    FlashFreq=40,\
+                    ResetMethod=nodemcu,\
+                    dbg=Disabled,\
+                    lvl=None____,\
+                    ip=lm2f,\
+                    vt=flash,\
+                    exception=disabled,\
+                    led=2,\
+                    wipe=none"\
               --save-prefs
 	./arduino --pref "editor.linenumbers=true" --save-prefs
 	./arduino --pref "update.check=false" --save-prefs
