@@ -57,7 +57,7 @@ portable/sketchbook/libraries.orig:
 	mv portable/sketchbook/libraries portable/sketchbook/libraries.orig
 	ln -s ../../Sonoff-Tasmota/lib portable/sketchbook/libraries
 
-libs: portable/sketchbook/libraries.orig dirs repo 
+libs: portable/sketchbook/libraries.orig dirs repo
 
 portable/sketchbook/sonoff:
 	$(info 7 Adding source code)
@@ -196,5 +196,5 @@ scp: build/sonoff.bin build/sonoff-minimal.bin build/esp.bin build/esp-minimal.b
 # tasmota-server described in ~/.ssh/config
 	scp $(wildcard build/*.bin) build/version.txt tasmota-server:/var/www/html/tasmota
 
-ota-server: 
+ota-server:
 	python -m SimpleHTTPServer 8000
