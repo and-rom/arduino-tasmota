@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := deploy-sketch
 
-.PHONY:  download extract dirs board repo libs src tune tool prefs config install-ide deploy-sketch run bins scp ota-server clean
+.PHONY:  download extract dirs board repo libs src tune tool prefs config install-ide deploy-sketch run bins scp ota-server clean clean-all clean-config
 #.SILENT:
 
 UNAME_P := $(shell uname -p)
@@ -165,7 +165,14 @@ espupload: build
 	                                                --upload
 
 clean:
-	rm -rf *.bin
+	rm -rf build/*.bin
+
+clean-all:
+	rm -rf $(filter-out Makefile user_config_override.h,$(wildcard *))
+
+clean-config:
+	rm -rf Sonoff-Tasmota/sonoff/user_config_override.h
+
 
 bins: sonoff.bin sonoff-minimal.bin esp.bin esp-minimal.bin
 
