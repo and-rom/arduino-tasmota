@@ -191,6 +191,11 @@ clean-config:
 
 
 bins: sonoff.bin sonoff-minimal.bin esp.bin esp-minimal.bin
+build/version.txt: build
+	$(eval VER := $(shell cat Sonoff-Tasmota/sonoff/sonoff_version.h | sed -ne "s#^.*VERSION = \\(.*\\);#\1#p"))
+	$(eval STR_VER :=$(shell printf '%d.%d.%d' "$$(( $$(( $(VER) >> 24 )) & 0xFF ))" "$$(( $$(( $(VER) >> 16 )) & 0xFF ))" "$$(( $$(( $(VER) >> 8 )) & 0xFF ))" ))
+	$(eval STR_VER :=$(shell [ $$(( $(VER) & 0xFF)) -ne 0 ] && printf '%s.%d' $(STR_VER) "$$(( $(VER) & 0xFF ))" || echo $(STR_VER)))
+	echo $(STR_VER) > build/version.txt
 
 scp: build/sonoff.bin build/sonoff-minimal.bin build/esp.bin build/esp-minimal.bin build/version.txt
 # tasmota-server described in ~/.ssh/config
